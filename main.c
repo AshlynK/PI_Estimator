@@ -27,6 +27,7 @@ int isInCircle(double x, double y){
 int main(int argc, char *argv[]){
 
     long long int n;
+    int i;
     int count = 0;
     if(argc<2) {
 		printf("Usage: loop {number of iterations} [number of threads]\n");
