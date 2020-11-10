@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-gcc -o pa4 pa4.c -w -lm -fopenmp
+gcc -o pi main.c -w -lm -fopenmp
 
 ./411/4PA/PI_Estimator 1000000000 1 >> result_speedup.txt
 ./411/4PA/PI_Estimator  1000000000 2 >> result_speedup.txt
