@@ -18,7 +18,7 @@ int isInCircle(double x, double y){
 	x -= 0.5;
     y -= 0.5;
 	printf("(%f*%f) + (%f*%f) < 0.25 ? ", x,x,y,y);
-	if ((pow(x, 2) + pow(y, 2)) < pow(0.5, 2)){
+	if ((x*x) + (y*y)) < 0.25){
 		return 1;
 	}
 	return 0;
