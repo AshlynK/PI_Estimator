@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
 	}
 	
 	n = atoll(argv[1]);
-	printf("Debug: number of iterations = %lld (%d)\n",loops, sizeof(long long int));
+	printf("Debug: number of iterations = %lld (%d)\n", n, sizeof(long long int));
 
 	int p=1;
 	if(argc==3) {
