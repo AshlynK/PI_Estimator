@@ -5,65 +5,46 @@
 #include <omp.h>
 #include <math.h>
 #include <assert.h>
-#define RANGE 10000
-
-void printUsage(void){
-	printf("pi <n> <number of threads>\n");
-}
-
-//function determines if dart landed in circle
-// true if x^2 + y^2 < 0.5^2
-
-int isInCircle(double x, double y){
-	x -= 0.5;
-    y -= 0.5;
-	printf("(%f*%f) + (%f*%f) < 0.25 ? ", x,x,y,y);
-	if (((x*x) + (y*y)) < 0.25){
-		return 1;
-	}
-	return 0;
-}
-
+#define RNG_MOD 0x80000000
+int seed;
 int main(int argc, char *argv[]){
 
     long long int n;
     int i;
     int count = 0;
+    double x;
+    double y;
     if(argc<2) {
-		printf("Usage: loop {number of iterations} [number of threads]\n");
-		exit(1);
-	}
-	
-	n = atoll(argv[1]);
-	printf("Debug: number of iterations = %lld (%d)\n", n, sizeof(long long int));
-
-	int p=1;
-	if(argc==3) {
-		p = atoi(argv[2]);
-		assert(p>=1);
-		printf("Debug: number of requested threads = %d\n",p);
-	}
-
-	omp_set_num_threads(p);
-
-	// set timer
-	double time = omp_get_wtime();
+        exit(1);
+    }
     
-	#pragma omp parallel for private(i) reduction(+:count)
-	for (int i = 0; i < n; i++){
-		int rank = omp_get_thread_num();
-		// generate random x and y between 0 and 1
-		double x = (double)(rand() %RANGE)/RANGE;
-		double y = (double)(rand() %RANGE)/RANGE;
-		if (isInCircle(x, y)){
-			count++;
-		}
-	} //end of pragma
+    n = atoll(argv[1]);
 
-	double pi = ((double)count/(double)n) * 4.0;
 
-	time = omp_get_wtime() - time;
-	printf("π = %f, p: %d, n: %lld, time: %f seconds\n", pi, p, n, time);
-	
-	return 0;
+    int p=1;
+    if(argc==3) {
+        p = atoi(argv[2]);
+        assert(p>=1);
+    }
+
+    omp_set_num_threads(p); // set number of threads
+    double time = omp_get_wtime();
+    #pragma omp parallel private(x,y,seed) reduction(+:count) 
+    {
+        //different seed for every thread
+        seed = 25234 + 17 * omp_get_thread_num();
+        #pragma omp for
+        for (i = 0; i <= n; i++) {
+            x = (double)(rand_r(&seed) %RNG_MOD)/RNG_MOD;
+            y = (double)(rand_r(&seed) %RNG_MOD)/RNG_MOD;
+            if (x*x + y*y <= 1) count++;
+        }
+    }
+
+    double pi = ((double)count/(double)n) * 4.0;
+
+    time = omp_get_wtime() - time;
+    printf("π = %f, p: %d, n: %lld, time: %f seconds\n", pi, p, n, time);
+    
+    return 0;
 }
